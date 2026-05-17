@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Turf Cricket Match</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body { font-family: Arial; background:#0f172a; color:white; text-align:center }
+input, select, button { padding:10px; margin:5px; font-size:15px }
+button { background:#22c55e; border:none; border-radius:6px; font-weight:bold }
+.secondary { background:#38bdf8 }
+.warning { background:#facc15 }
+.danger { background:#ef4444; color:white }
+.card { background:#020617; padding:10px; margin:10px; border-radius:8px }
+</style>
+</head>
+<body>
+
+<h1>🏏 Turf Cricket Match</h1>
+
+<div class="card">
+<input id="matchName" placeholder="Match Name"><br>
+<input id="teamA" placeholder="Team A Name"><br>
+<input id="teamB" placeholder="Team B Name"><br>
+
+<select id="oversSelect">
+<option value="5">5 Overs</option>
+<option value="6">6 Overs</option>
+<option value="10">10 Overs</option>
+</select><br>
+
+<select id="tossWinner">
+<option value="A">Team A wins toss</option>
+<option value="B">Team B wins toss</option>
+</select>
+
+<select id="tossDecision">
+<option value="bat">Bat First</option>
+<option value="bowl">Bowl First</option>
+</select><br>
+
+<button onclick="startMatch()">Start Match</button>
+</div>
+
+<div class="card">
+<h2 id="status">Waiting...</h2>
+<h3 id="score">0/0 (0.0)</h3>
+<h4 id="target"></h4>
+<h4 id="req"></h4>
+</div>
+
+<div class="card">
+<button onclick="run(1)">+1</button>
+<button onclick="run(2)">+2</button>
+<button onclick="run(4)">+4</button>
+<button onclick="run(6)">+6</button><br>
+<button class="secondary" onclick="dot()">Dot</button>
+<button class="secondary" onclick="wicket()">Wicket</button><br>
+<button class="warning" onclick="wide()">Wide</button>
+<button class="warning" onclick="noball()">No Ball</button><br>
+<button class="danger" onclick="undo()">Undo</button>
+</div>
+
+<div class="card">
+<h3>Over-wise Runs</h3>
+<ul id="overDetails"></ul>
+</div>
+
+<script>
+let maxOvers, innings=1;
+let runs=0, wkts=0, balls=0, overs=0;
+let history=[], overRuns=[], target=0;
+
+function startMatch(){
+ maxOvers = parseInt(oversSelect.value);
+ let batTeam;
+ if(tossWinner.value==="A"){
+   batTeam = tossDecision.value==="bat" ? teamA.value : teamB.value;
+ } else {
+   batTeam = tossDecision.value==="bat" ? teamB.value : teamA.value;
+ }
+ document.getElementById("status").innerText = batTeam+" Batting (1st Innings)";
+ update();
+}
+
+function save(){ history.push({runs,wkts,balls,overs,overRuns:[...overRuns]}); }
+
+function countBall(){
+ balls++;
+ if(balls===6){
+  overRuns[overs]=overRuns[overs]||0;
+  overs++; balls=0;
+ }
+ if(overs===maxOvers){ endInnings(); }
+}
+
+function run(r){ save(); runs+=r; overRuns[overs]=(overRuns[overs]||0)+r; countBall(); update(); }
+function dot(){ save(); countBall(); update(); }
+function wicket(){ save(); wkts++; countBall(); update(); }
+function wide(){ save(); runs++; overRuns[overs]=(overRuns[overs]||0)+1; update(); }
+function noball(){ save(); runs++; overRuns[overs]=(overRuns[overs]||0)+1; update(); }
+
+function endInnings(){
+ if(innings===1){
+   target=runs+1;
+   innings=2;
+   runs=wkts=balls=overs=0;
+   overRuns=[];
+   document.getElementById("status").innerText="2nd Innings Started";
+   document.getElementById("target").innerText="Target: "+target;
+ } else {
+   document.getElementById("status").innerText=
+   runs>=target ? "Chasing Team Won 🎉" : "Defending Team Won 🎯";
+ }
+}
+
+function update(){
+ score.innerText=`${runs}/${wkts} (${overs}.${balls})`;
+ let ul=document.getElementById("overDetails"); ul.innerHTML="";
+ overRuns.forEach((r,i)=>{ ul.innerHTML+=`<li>Over ${i+1}: ${r} runs</li>`; });
+ if(innings===2){
+   let ballsLeft=(maxOvers*6)-(overs*6+balls);
+   let reqRuns=target-runs;
+   req.innerText="Need "+reqRuns+" runs in "+ballsLeft+" balls";
+ }
+}
+
+function undo(){
+ if(history.length){
+  let h=history.pop();
+  runs=h.runs; wkts=h.wkts; balls=h.balls; overs=h.overs; overRuns=h.overRuns;
+  update();
+ }
+}
+</script>
+
+</body>
+</html>
