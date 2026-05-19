@@ -5,132 +5,483 @@
 <title>Turf Cricket Match</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body { font-family: Arial; background:#0f172a; color:white; text-align:center }
-input, select, button { padding:10px; margin:5px; font-size:15px }
-button { background:#22c55e; border:none; border-radius:6px; font-weight:bold }
-.secondary { background:#38bdf8 }
-.warning { background:#facc15 }
-.danger { background:#ef4444; color:white }
-.card { background:#020617; padding:10px; margin:10px; border-radius:8px }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: white;
+  text-align: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+h1 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  background: linear-gradient(90deg, #22c55e, #38bdf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+}
+input, select, button {
+  padding: 12px 16px;
+  margin: 6px;
+  font-size: 15px;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+}
+input {
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: white;
+  width: 220px;
+  transition: border-color 0.3s;
+}
+input:focus { border-color: #22c55e; }
+select {
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: white;
+  width: 220px;
+}
+button {
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.1s, box-shadow 0.2s;
+  min-width: 60px;
+}
+button:active { transform: scale(0.95); }
+.btn-run {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  font-size: 18px;
+  width: 70px;
+  height: 50px;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+.btn-dot {
+  background: linear-gradient(135deg, #64748b, #475569);
+  color: white;
+  width: 100px;
+  height: 45px;
+}
+.btn-wicket {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  width: 100px;
+  height: 45px;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+.btn-extra {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #1e293b;
+  width: 100px;
+  height: 45px;
+}
+.btn-undo {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: white;
+  width: 100px;
+  height: 45px;
+}
+.btn-start {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  font-size: 16px;
+  padding: 14px 40px;
+  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.4);
+}
+.card {
+  background: rgba(2, 6, 23, 0.7);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  margin: 15px auto;
+  border-radius: 16px;
+  border: 1px solid #1e293b;
+  max-width: 500px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+.score-display {
+  font-size: 3rem;
+  font-weight: bold;
+  background: linear-gradient(90deg, #fff, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 10px 0;
+}
+.status-text {
+  font-size: 1.1rem;
+  color: #38bdf8;
+  margin-bottom: 8px;
+}
+.target-text {
+  color: #facc15;
+  font-size: 1rem;
+  margin: 5px 0;
+}
+.req-text {
+  color: #f87171;
+  font-size: 0.95rem;
+}
+.btn-group {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+.over-card {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 12px;
+  margin: 10px 0;
+  text-align: left;
+  border: 1px solid #334155;
+}
+.over-card h4 {
+  color: #38bdf8;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+.ball-tracker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.ball {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 13px;
+}
+.ball-0 { background: #374151; color: #9ca3af; }
+.ball-1 { background: #1d4ed8; color: white; }
+.ball-2 { background: #2563eb; color: white; }
+.ball-3 { background: #7c3aed; color: white; }
+.ball-4 { background: #16a34a; color: white; }
+.ball-6 { background: #dc2626; color: white; }
+.ball-W { background: #991b1b; color: #fca5a5; }
+.ball-Wd { background: #d97706; color: white; }
+.ball-Nb { background: #ca8a04; color: white; }
+.over-summary {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+.over-total {
+  float: right;
+  color: #22c55e;
+  font-weight: bold;
+}
+.hidden { display: none; }
+.innings-badge {
+  display: inline-block;
+  background: #22c55e;
+  color: #0f172a;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+.result-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 10px 0;
+  animation: pulse 1s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
 </style>
 </head>
 <body>
 
 <h1>🏏 Turf Cricket Match</h1>
 
-<div class="card">
+<!-- Setup Card -->
+<div class="card" id="setupCard">
 <input id="matchName" placeholder="Match Name"><br>
 <input id="teamA" placeholder="Team A Name"><br>
 <input id="teamB" placeholder="Team B Name"><br>
-
-<select id="oversSelect">
-<option value="5">5 Overs</option>
-<option value="6">6 Overs</option>
-<option value="10">10 Overs</option>
-</select><br>
-
+<input id="oversInput" type="number" min="1" max="50" placeholder="Number of Overs (e.g. 5, 8, 12)"><br>
+<input id="playersInput" type="number" min="2" max="11" placeholder="Players per team (e.g. 6, 8, 11)"><br>
 <select id="tossWinner">
 <option value="A">Team A wins toss</option>
 <option value="B">Team B wins toss</option>
-</select>
-
+</select><br>
 <select id="tossDecision">
 <option value="bat">Bat First</option>
 <option value="bowl">Bowl First</option>
 </select><br>
-
-<button onclick="startMatch()">Start Match</button>
+<button class="btn-start" onclick="startMatch()">Start Match</button>
 </div>
 
-<div class="card">
-<h2 id="status">Waiting...</h2>
-<h3 id="score">0/0 (0.0)</h3>
-<h4 id="target"></h4>
-<h4 id="req"></h4>
+<!-- Scoreboard Card -->
+<div class="card hidden" id="scoreCard">
+<span class="innings-badge" id="inningsBadge">1st Innings</span>
+<div class="status-text" id="status"></div>
+<div class="score-display" id="score">0/0 (0.0)</div>
+<div class="target-text" id="target"></div>
+<div class="req-text" id="req"></div>
 </div>
 
-<div class="card">
-<button onclick="run(1)">+1</button>
-<button onclick="run(2)">+2</button>
-<button onclick="run(4)">+4</button>
-<button onclick="run(6)">+6</button><br>
-<button class="secondary" onclick="dot()">Dot</button>
-<button class="secondary" onclick="wicket()">Wicket</button><br>
-<button class="warning" onclick="wide()">Wide</button>
-<button class="warning" onclick="noball()">No Ball</button><br>
-<button class="danger" onclick="undo()">Undo</button>
+<!-- Controls Card -->
+<div class="card hidden" id="controlsCard">
+<div class="btn-group">
+<button class="btn-run" onclick="run(1)">1</button>
+<button class="btn-run" onclick="run(2)">2</button>
+<button class="btn-run" onclick="run(3)">3</button>
+<button class="btn-run" onclick="run(4)">4</button>
+<button class="btn-run" onclick="run(6)">6</button>
+</div>
+<div class="btn-group">
+<button class="btn-dot" onclick="dot()">Dot (0)</button>
+<button class="btn-wicket" onclick="wicket()">Wicket</button>
+</div>
+<div class="btn-group">
+<button class="btn-extra" onclick="wide()">Wide</button>
+<button class="btn-extra" onclick="noball()">No Ball</button>
+</div>
+<div class="btn-group">
+<button class="btn-undo" onclick="undo()">↩ Undo</button>
+</div>
+<div class="btn-group" style="margin-top:12px">
+<button class="btn-wicket" style="width:140px" onclick="newMatch()">🔄 New Match</button>
+</div>
 </div>
 
-<div class="card">
-<h3>Over-wise Runs</h3>
-<ul id="overDetails"></ul>
+<!-- Ball-by-Ball Details -->
+<div class="card hidden" id="detailsCard">
+<h3 style="margin-bottom:12px; color:#38bdf8;">📊 Ball-by-Ball Tracker</h3>
+<div id="overDetails"></div>
 </div>
 
 <script>
-let maxOvers, innings=1;
-let runs=0, wkts=0, balls=0, overs=0;
-let history=[], overRuns=[], target=0;
+let maxOvers, maxWickets, innings = 1;
+let runs = 0, wkts = 0, balls = 0, overs = 0;
+let history = [];
+let ballLog = [];
+let battingFirst = '', bowlingFirst = '';
+let target = 0;
 
-function startMatch(){
- maxOvers = parseInt(oversSelect.value);
- let batTeam;
- if(tossWinner.value==="A"){
-   batTeam = tossDecision.value==="bat" ? teamA.value : teamB.value;
- } else {
-   batTeam = tossDecision.value==="bat" ? teamB.value : teamA.value;
- }
- document.getElementById("status").innerText = batTeam+" Batting (1st Innings)";
- update();
-}
+function startMatch() {
+  const oversVal = parseInt(document.getElementById('oversInput').value);
+  if (!oversVal || oversVal < 1) {
+    alert('Please enter a valid number of overs');
+    return;
+  }
+  if (!document.getElementById('teamA').value || !document.getElementById('teamB').value) {
+    alert('Please enter both team names');
+    return;
+  }
+  maxOvers = oversVal;
+  const playersVal = parseInt(document.getElementById('playersInput').value);
+  if (!playersVal || playersVal < 2) {
+    alert('Please enter valid number of players per team (minimum 2)');
+    return;
+  }
+  maxWickets = playersVal - 1;
 
-function save(){ history.push({runs,wkts,balls,overs,overRuns:[...overRuns]}); }
+  if (document.getElementById('tossWinner').value === "A") {
+    battingFirst = document.getElementById('tossDecision').value === "bat"
+      ? document.getElementById('teamA').value
+      : document.getElementById('teamB').value;
+    bowlingFirst = document.getElementById('tossDecision').value === "bat"
+      ? document.getElementById('teamB').value
+      : document.getElementById('teamA').value;
+  } else {
+    battingFirst = document.getElementById('tossDecision').value === "bat"
+      ? document.getElementById('teamB').value
+      : document.getElementById('teamA').value;
+    bowlingFirst = document.getElementById('tossDecision').value === "bat"
+      ? document.getElementById('teamA').value
+      : document.getElementById('teamB').value;
+  }
 
-function countBall(){
- balls++;
- if(balls===6){
-  overRuns[overs]=overRuns[overs]||0;
-  overs++; balls=0;
- }
- if(overs===maxOvers){ endInnings(); }
-}
-
-function run(r){ save(); runs+=r; overRuns[overs]=(overRuns[overs]||0)+r; countBall(); update(); }
-function dot(){ save(); countBall(); update(); }
-function wicket(){ save(); wkts++; countBall(); update(); }
-function wide(){ save(); runs++; overRuns[overs]=(overRuns[overs]||0)+1; update(); }
-function noball(){ save(); runs++; overRuns[overs]=(overRuns[overs]||0)+1; update(); }
-
-function endInnings(){
- if(innings===1){
-   target=runs+1;
-   innings=2;
-   runs=wkts=balls=overs=0;
-   overRuns=[];
-   document.getElementById("status").innerText="2nd Innings Started";
-   document.getElementById("target").innerText="Target: "+target;
- } else {
-   document.getElementById("status").innerText=
-   runs>=target ? "Chasing Team Won 🎉" : "Defending Team Won 🎯";
- }
-}
-
-function update(){
- score.innerText=`${runs}/${wkts} (${overs}.${balls})`;
- let ul=document.getElementById("overDetails"); ul.innerHTML="";
- overRuns.forEach((r,i)=>{ ul.innerHTML+=`<li>Over ${i+1}: ${r} runs</li>`; });
- if(innings===2){
-   let ballsLeft=(maxOvers*6)-(overs*6+balls);
-   let reqRuns=target-runs;
-   req.innerText="Need "+reqRuns+" runs in "+ballsLeft+" balls";
- }
-}
-
-function undo(){
- if(history.length){
-  let h=history.pop();
-  runs=h.runs; wkts=h.wkts; balls=h.balls; overs=h.overs; overRuns=h.overRuns;
+  document.getElementById("status").innerText = battingFirst + " Batting";
+  document.getElementById("inningsBadge").innerText = "1st Innings";
+  document.getElementById("setupCard").classList.add('hidden');
+  document.getElementById("scoreCard").classList.remove('hidden');
+  document.getElementById("controlsCard").classList.remove('hidden');
+  document.getElementById("detailsCard").classList.remove('hidden');
+  ballLog = [[]];
   update();
- }
+}
+
+function save() {
+  history.push({
+    runs, wkts, balls, overs, innings, target,
+    ballLog: JSON.parse(JSON.stringify(ballLog))
+  });
+}
+
+function countBall() {
+  balls++;
+  if (balls === 6) {
+    overs++;
+    balls = 0;
+    if (overs < maxOvers) {
+      ballLog.push([]);
+    }
+  }
+  checkEnd();
+}
+
+function checkEnd() {
+  if (innings === 2 && runs >= target) {
+    endInnings();
+    return;
+  }
+  if (overs === maxOvers || wkts === maxWickets) {
+    endInnings();
+  }
+}
+
+function run(r) {
+  save();
+  runs += r;
+  ballLog[overs].push(String(r));
+  countBall();
+  update();
+}
+
+function dot() {
+  save();
+  ballLog[overs].push('0');
+  countBall();
+  update();
+}
+
+function wicket() {
+  save();
+  wkts++;
+  ballLog[overs].push('W');
+  countBall();
+  update();
+}
+
+function wide() {
+  save();
+  runs++;
+  ballLog[overs].push('Wd');
+  // Wide doesn't count as a ball
+  update();
+}
+
+function noball() {
+  save();
+  runs++;
+  ballLog[overs].push('Nb');
+  // No ball doesn't count as a ball
+  update();
+}
+
+function endInnings() {
+  if (innings === 1) {
+    target = runs + 1;
+    innings = 2;
+    runs = wkts = balls = overs = 0;
+    ballLog = [[]];
+    document.getElementById("status").innerText = bowlingFirst + " Batting";
+    document.getElementById("inningsBadge").innerText = "2nd Innings";
+    document.getElementById("target").innerText = "🎯 Target: " + target;
+    update();
+  } else {
+    let resultText = '';
+    if (runs >= target) {
+      resultText = bowlingFirst + " Won 🎉";
+    } else if (runs === target - 1) {
+      resultText = "Match Tied! 🤝";
+    } else {
+      resultText = battingFirst + " Won by " + (target - 1 - runs) + " runs 🎯";
+    }
+    document.getElementById("status").innerHTML = '<div class="result-text">' + resultText + '</div>';
+    document.getElementById("controlsCard").classList.add('hidden');
+  }
+}
+
+function update() {
+  document.getElementById("score").innerText = `${runs}/${wkts} (${overs}.${balls})`;
+  renderBallTracker();
+  if (innings === 2 && target > 0) {
+    let ballsLeft = (maxOvers * 6) - (overs * 6 + balls);
+    let reqRuns = target - runs;
+    document.getElementById("req").innerText = "Need " + reqRuns + " runs in " + ballsLeft + " balls";
+  }
+}
+
+function renderBallTracker() {
+  let container = document.getElementById("overDetails");
+  container.innerHTML = "";
+  ballLog.forEach((overBalls, i) => {
+    let overDiv = document.createElement('div');
+    overDiv.className = 'over-card';
+    let overTotal = 0;
+    overBalls.forEach(b => {
+      if (b === 'W') overTotal += 0;
+      else if (b === 'Wd' || b === 'Nb') overTotal += 1;
+      else overTotal += parseInt(b);
+    });
+    let title = `<h4>Over ${i + 1} <span class="over-total">${overTotal} runs</span></h4>`;
+    let ballsHtml = '<div class="ball-tracker">';
+    overBalls.forEach(b => {
+      let cls = 'ball ball-' + b;
+      let label = b;
+      ballsHtml += `<div class="${cls}">${label}</div>`;
+    });
+    if (i === overs && balls < 6 && innings <= 2) {
+      // Show remaining balls as empty
+      let remaining = 6 - overBalls.filter(b => b !== 'Wd' && b !== 'Nb').length;
+      for (let j = 0; j < remaining; j++) {
+        ballsHtml += `<div class="ball" style="background:#1e293b;border:1px dashed #475569;color:#475569">•</div>`;
+      }
+    }
+    ballsHtml += '</div>';
+    let summary = `<div class="over-summary">${overBalls.length} deliveries | ${overTotal} runs</div>`;
+    overDiv.innerHTML = title + ballsHtml + summary;
+    container.appendChild(overDiv);
+  });
+}
+
+function undo() {
+  if (history.length) {
+    let h = history.pop();
+    runs = h.runs;
+    wkts = h.wkts;
+    balls = h.balls;
+    overs = h.overs;
+    innings = h.innings;
+    target = h.target;
+    ballLog = h.ballLog;
+    update();
+  }
+}
+
+function newMatch() {
+  if (!confirm('Start a new match? All current data will be reset.')) return;
+  innings = 1;
+  runs = wkts = balls = overs = 0;
+  history = [];
+  ballLog = [];
+  target = 0;
+  battingFirst = '';
+  bowlingFirst = '';
+  document.getElementById('score').innerText = '0/0 (0.0)';
+  document.getElementById('status').innerText = '';
+  document.getElementById('target').innerText = '';
+  document.getElementById('req').innerText = '';
+  document.getElementById('overDetails').innerHTML = '';
+  document.getElementById('inningsBadge').innerText = '1st Innings';
+  document.getElementById('setupCard').classList.remove('hidden');
+  document.getElementById('scoreCard').classList.add('hidden');
+  document.getElementById('controlsCard').classList.add('hidden');
+  document.getElementById('detailsCard').classList.add('hidden');
 }
 </script>
 
