@@ -227,8 +227,10 @@ button:active { transform: scale(0.95); }
 <span class="innings-badge" id="inningsBadge">1st Innings</span>
 <div class="status-text" id="status"></div>
 <div class="score-display" id="score">0/0 (0.0)</div>
+<div class="target-text" id="firstInningsScore"></div>
 <div class="target-text" id="target"></div>
 <div class="req-text" id="req"></div>
+<button class="btn-start hidden" id="newMatchBtn" onclick="newMatch()" style="margin-top:15px">🔄 Start New Match</button>
 </div>
 
 <!-- Controls Card -->
@@ -269,6 +271,7 @@ let history = [];
 let ballLog = [];
 let battingFirst = '', bowlingFirst = '';
 let target = 0;
+let firstInningsRuns = 0, firstInningsWkts = 0, firstInningsOvers = 0, firstInningsBalls = 0;
 
 function startMatch() {
   const oversVal = parseInt(document.getElementById('oversInput').value);
@@ -384,18 +387,24 @@ function noball() {
 
 function endInnings() {
   if (innings === 1) {
+    firstInningsRuns = runs;
+    firstInningsWkts = wkts;
+    firstInningsOvers = overs;
+    firstInningsBalls = balls;
     target = runs + 1;
     innings = 2;
     runs = wkts = balls = overs = 0;
     ballLog = [[]];
     document.getElementById("status").innerText = bowlingFirst + " Batting";
     document.getElementById("inningsBadge").innerText = "2nd Innings";
+    document.getElementById("firstInningsScore").innerText = "📋 " + battingFirst + ": " + firstInningsRuns + "/" + firstInningsWkts + " (" + firstInningsOvers + "." + firstInningsBalls + ")";
     document.getElementById("target").innerText = "🎯 Target: " + target;
     update();
   } else {
     let resultText = '';
     if (runs >= target) {
-      resultText = bowlingFirst + " Won 🎉";
+      let wicketsLeft = maxWickets - wkts;
+      resultText = bowlingFirst + " Won by " + wicketsLeft + " wickets 🎉";
     } else if (runs === target - 1) {
       resultText = "Match Tied! 🤝";
     } else {
@@ -403,6 +412,7 @@ function endInnings() {
     }
     document.getElementById("status").innerHTML = '<div class="result-text">' + resultText + '</div>';
     document.getElementById("controlsCard").classList.add('hidden');
+    document.getElementById("newMatchBtn").classList.remove('hidden');
   }
 }
 
@@ -467,6 +477,7 @@ function newMatch() {
   if (!confirm('Start a new match? All current data will be reset.')) return;
   innings = 1;
   runs = wkts = balls = overs = 0;
+  firstInningsRuns = firstInningsWkts = firstInningsOvers = firstInningsBalls = 0;
   history = [];
   ballLog = [];
   target = 0;
@@ -476,8 +487,10 @@ function newMatch() {
   document.getElementById('status').innerText = '';
   document.getElementById('target').innerText = '';
   document.getElementById('req').innerText = '';
+  document.getElementById('firstInningsScore').innerText = '';
   document.getElementById('overDetails').innerHTML = '';
   document.getElementById('inningsBadge').innerText = '1st Innings';
+  document.getElementById('newMatchBtn').classList.add('hidden');
   document.getElementById('setupCard').classList.remove('hidden');
   document.getElementById('scoreCard').classList.add('hidden');
   document.getElementById('controlsCard').classList.add('hidden');
